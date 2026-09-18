@@ -757,25 +757,62 @@ ${optimization.hookRewrites.first15Sec}
             </div>
           </div>
 
-          {/* Section 6: CTR Packaging Strategy */}
-          <div className="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <Lightbulb className="w-3.5 h-3.5" />
-              Thumbnail & CTR Packaging Prescription
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1">
-                <span className="text-slate-400 font-semibold">Recommended Overlay Text:</span>
-                <p className="font-extrabold text-amber-300 text-sm">{optimization.ctrPackaging.thumbnailOverlayText}</p>
-                <p className="text-[11px] text-slate-500">Max 3 words for mobile clarity</p>
+          {/* Section 6: CTR Packaging Strategy & Approved Thumbnail Showcase */}
+          <div className="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-xl p-4 space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-800 pb-2.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                <Lightbulb className="w-3.5 h-3.5" />
+                Thumbnail & CTR Packaging (Final Package)
+              </h4>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400">Official Package Status:</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 ${
+                  video.thumbnailStatus === 'Approved'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                }`}>
+                  {video.thumbnailStatus === 'Approved' ? '✓ Thumbnail Status: Approved' : '⚠ Thumbnail Status: Needs Review'}
+                </span>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1">
-                <span className="text-slate-400 font-semibold">Color Contrast Advice:</span>
-                <p className="text-slate-300 leading-relaxed text-[11px]">{optimization.ctrPackaging.colorContrastAdvice}</p>
+            </div>
+
+            {/* Thumbnail Visual Showcase & Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-4 space-y-2">
+                <div className="relative aspect-video rounded-xl overflow-hidden bg-black border-2 border-slate-700/80 shadow-lg group">
+                  <img
+                    src={video.approvedThumbnailUrl || video.thumbnailUrl}
+                    alt="Official Final Thumbnail"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] text-white font-bold">
+                    {video.thumbnailStatus === 'Approved' ? '✓ APPROVED CREATIVE' : 'EXTRACTED THUMBNAIL'}
+                  </div>
+                  <div className="absolute bottom-2 right-2 bg-black/90 px-1.5 py-0.5 rounded text-[10px] font-mono text-white font-bold">
+                    12:45
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  {video.thumbnailStatus === 'Approved'
+                    ? 'This approved de-cluttered version is locked in as the official creative for your upload package.'
+                    : 'Review and approve this thumbnail in the Thumbnail Studio tab.'}
+                </p>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1">
-                <span className="text-slate-400 font-semibold">Curiosity Gap Mechanism:</span>
-                <p className="text-slate-300 leading-relaxed text-[11px]">{optimization.ctrPackaging.curiosityGap}</p>
+
+              <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-slate-400 font-semibold">Recommended Overlay Text:</span>
+                  <p className="font-extrabold text-amber-300 text-sm">{optimization.ctrPackaging.thumbnailOverlayText}</p>
+                  <p className="text-[11px] text-slate-500">Max 3 words for mobile clarity</p>
+                </div>
+                <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-slate-400 font-semibold">Color Contrast Advice:</span>
+                  <p className="text-slate-300 leading-relaxed text-[11px]">{optimization.ctrPackaging.colorContrastAdvice}</p>
+                </div>
+                <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-slate-400 font-semibold">Curiosity Gap Mechanism:</span>
+                  <p className="text-slate-300 leading-relaxed text-[11px]">{optimization.ctrPackaging.curiosityGap}</p>
+                </div>
               </div>
             </div>
           </div>

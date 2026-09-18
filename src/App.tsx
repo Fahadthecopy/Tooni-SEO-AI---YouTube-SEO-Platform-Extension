@@ -186,8 +186,10 @@ export default function App() {
 
         {activeTab === 'thumbnail' && (
           <ThumbnailCTRTab
+            currentVideo={currentVideo}
             currentThumbnail={currentVideo.thumbnailUrl}
             videoTitle={currentVideo.title}
+            onUpdateVideo={handleCustomUpdate}
           />
         )}
 

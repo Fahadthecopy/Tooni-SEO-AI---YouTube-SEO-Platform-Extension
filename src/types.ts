@@ -1,20 +1,87 @@
+export type ContentType = 'Long Video' | 'Short' | 'Image Post' | 'Video Post' | 'Social Post';
+
+export interface ContentQualityReview {
+  status: 'Approved' | 'Needs Improvement' | 'Rejected / Not Recommended';
+  overallQualityScore: number;
+  whyNeedsImprovement: string;
+  whatIsWrong: string[];
+  whatShouldChange: string[];
+  improvedVersionSummary: string;
+  disclaimer: string;
+}
+
+export interface LongFormAnalysis {
+  mainTopic: string;
+  sections: {
+    timestamp: string;
+    title: string;
+    keyMoments: string;
+    retentionTip: string;
+  }[];
+  searchIntent: string;
+  contentGaps: string[];
+  hookAnalysis: {
+    first15sEvaluation: string;
+    recommendations: string;
+  };
+  viewerJourney: string;
+  thumbnailOpportunity: string;
+  seoOpportunities: string[];
+}
+
+export interface ShortsAnalysis {
+  hook0to1s: string;
+  visualComposition: string;
+  coverPreviewUrl?: string;
+  recommendedCoverText: string;
+  loopFactorAdvice: string;
+  fastTitle: string;
+  soundAudioAdvice: string;
+  hashtags: string[];
+}
+
+export interface ImagePostAnalysis {
+  detectedSubjectOrService: string;
+  purposeOfPost: string;
+  visualMessage: string;
+  identifiedProblems: string[];
+  whatShouldBeImproved: string[];
+  improvedPostCreative: {
+    headline: string;
+    bodyCopy: string;
+    callToAction: string;
+    hashtags: string[];
+    visualLayoutAdvice: string;
+  };
+}
+
 export interface VideoData {
   id: string;
   url: string;
   title: string;
   channel: string;
   channelId?: string;
+  channelUrl?: string;
   views: number | null; // null represents "Data unavailable"
   likes: number | null;
   comments: number | null;
   publishDate: string;
   duration: string;
   thumbnailUrl: string;
+  originalThumbnailUrl?: string;
+  approvedThumbnailUrl?: string;
+  thumbnailStatus?: 'Approved' | 'Needs Review' | 'Original Kept' | 'Regenerated';
   description: string;
   tags: string[];
   category?: string;
   isVerifiedReal?: boolean;
   fetchSource?: 'oembed' | 'api' | 'sample';
+  contentType?: ContentType;
+  embedUrl?: string;
+  contentReview?: ContentQualityReview;
+  longFormAnalysis?: LongFormAnalysis;
+  shortsAnalysis?: ShortsAnalysis;
+  imagePostAnalysis?: ImagePostAnalysis;
 }
 
 export interface TargetViews {
@@ -461,17 +528,35 @@ export interface ExistingSeoImport {
 
 export interface ThumbnailStudioData {
   thumbnailUrl: string;
+  originalThumbnailUrl: string;
+  improvedThumbnailUrl: string;
+  thumbnailStatus: 'Approved' | 'Needs Review' | 'Original Kept' | 'Regenerated';
   mainCharacter: string;
-  objects: string[];
+  faceExpression: string;
+  eyesDescription: string;
+  characterClothing: string;
+  characterColors: string;
+  characterProportions: string;
+  importantObjects: string[];
   background: string;
   textInImage: string;
   logo: string;
   composition: string;
-  clutterLevel: 'Low / Clean' | 'Moderate' | 'Heavy Clutter';
-  contrast: string;
-  facialExpression: string;
   subjectPositioning: string;
+  visualHierarchy: string;
+  clutterLevel: 'Low / Clean' | 'Moderate' | 'Heavy Clutter';
+  clutterDetails: {
+    unnecessaryElements: string[];
+    duplicateObjects: string[];
+    backgroundNoise: string[];
+    textReadabilityIssues: string[];
+  };
+  contrast: string;
+  brightness: string;
   mobileReadability: string;
+  focalPoint: string;
+  emotionalImpact: string;
+  brandVisibility: string;
   characterLocked: boolean;
   characterLockDetails: {
     face: string;
@@ -490,11 +575,30 @@ export interface ThumbnailStudioData {
   };
   regeneratePrompt: string;
   generatedVariants?: {
+    id: string;
     label: string;
     prompt: string;
     textBadge: string;
     colorScheme: string;
+    previewUrl?: string;
   }[];
+  contentReview: ContentQualityReview;
+  editorSettings?: {
+    headlineText: string;
+    badgeText: string;
+    colorScheme: string;
+    backgroundStyle: string;
+    characterLocked: boolean;
+    clutterStripped: boolean;
+    textPosition: 'top-left' | 'center' | 'bottom-left' | 'split-right';
+    textSize: 'small' | 'medium' | 'large' | 'massive';
+  };
+  resolutionSupport: {
+    current: string;
+    supports4K: boolean;
+    supports8KTechnical: boolean;
+    qualityDisclaimer: string;
+  };
 }
 
 export interface BacklinkCampaign {
