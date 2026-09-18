@@ -1,0 +1,7 @@
+{
+  "name": "Tooni SEO AI - YouTube SEO Platform & Extension",
+  "description": "Comprehensive AI-powered YouTube and multi-platform SEO suite featuring Script-First SEO, Advanced On-Page & Metadata Analysis, Character-Locked Thumbnail Studio, Social SEO (TikTok & Facebook), Backlink Strategy, and Chrome extension.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
