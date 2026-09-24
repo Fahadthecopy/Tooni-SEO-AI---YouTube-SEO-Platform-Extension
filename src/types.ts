@@ -715,3 +715,128 @@ export interface MultiPlatformSocialSeo {
   };
 }
 
+// ==========================================
+// TOONI TV GROWTH SIMULATOR & PLANNER TYPES
+// ==========================================
+
+export type TargetPreset = '50k' | '100k' | 'custom';
+
+export interface SimulationAssumptions {
+  likeRateMin: number; // e.g. 3 (%)
+  likeRateMax: number; // e.g. 8 (%)
+  subConversionMin: number; // e.g. 0.5 (%)
+  subConversionMax: number; // e.g. 3.0 (%)
+  commentRateMin: number; // e.g. 0.1 (%)
+  commentRateMax: number; // e.g. 1.0 (%)
+  avgViewDurationPercent: number; // e.g. 42 (%)
+  ctrAverage: number; // e.g. 5.5 (%)
+}
+
+export interface EstimatedMetrics {
+  views: number;
+  likes: { min: number; max: number; average: number };
+  subscribers: { min: number; max: number; average: number };
+  comments: { min: number; max: number; average: number };
+  watchTimeMinutes: number;
+  watchTimeHours: number;
+  ctr: number; // e.g. 5.8 (%)
+  audienceRetention: number; // e.g. 44 (%)
+  engagementRate: number; // e.g. 4.8 (%)
+  seoScore: number;
+  thumbnailScore: number;
+  titleScore: number;
+}
+
+export type TrafficCategory = 'ORGANIC' | 'PAID' | 'EXTERNAL';
+
+export interface TrafficSourceItem {
+  id: string;
+  name: string;
+  category: TrafficCategory;
+  description: string;
+  estimatedTrafficShare: number; // Percentage, e.g. 35 (%)
+  estimatedViews: number;
+  estimatedCost: number; // $
+  ctr: number; // e.g. 6.2 (%)
+  conversionRate: number; // e.g. 2.1 (%)
+  subscribersGained: number;
+  watchTimeHours: number;
+  status: 'High Potential' | 'Moderate' | 'Testing Required' | 'Recommended Priority';
+}
+
+export interface AdsCampaignConfig {
+  budget: number;
+  country: string;
+  audienceAgeRange: string;
+  interest: string;
+  videoUrl: string;
+  campaignDurationDays: number;
+  targetViews: number;
+}
+
+export interface AdsCampaignEstimate {
+  estimatedReach: number;
+  estimatedImpressions: number;
+  estimatedViews: number;
+  costPerView: number; // $ e.g. 0.015
+  estimatedSubscribers: number;
+  estimatedWatchTimeHours: number;
+  disclaimer: string;
+}
+
+export interface WatchTimeCalculation {
+  videoType: 'Long Video' | 'Short';
+  videoLengthSeconds: number;
+  totalViews: number;
+  averageViewDurationSeconds: number;
+  averagePercentageViewed: number;
+  totalMinutesWatched: number;
+  totalHoursWatched: number;
+  estimatedRetention: number;
+  formulaDescription: string;
+  benchmarkFeedback: string;
+}
+
+export interface SimulationProgressState {
+  isRunning: boolean;
+  isPaused: boolean;
+  isComplete: boolean;
+  durationMinutes: number; // 5, 10, 20, 30
+  elapsedSeconds: number;
+  totalDurationSeconds: number;
+  currentViews: number;
+  currentLikes: number;
+  currentSubscribers: number;
+  currentComments: number;
+  currentWatchTimeHours: number;
+  statusMessage: string;
+  speedMultiplier: number; // 1, 5, 20, 60
+}
+
+export interface GrowthHistoryRecord {
+  id: string;
+  videoUrl: string;
+  videoTitle: string;
+  channelName: string;
+  date: string;
+  currentViews: number;
+  targetViews: number;
+  remainingViews: number;
+  seoScore: number;
+  thumbnailScore: number;
+  targetPreset: TargetPreset;
+  forecastLikes: number;
+  forecastSubscribers: number;
+  forecastComments: number;
+  forecastWatchHours: number;
+  keyTrafficSource: string;
+}
+
+export interface AppSimulatorSettings {
+  assumptions: SimulationAssumptions;
+  defaultTimerMinutes: number;
+  animationSpeed: 'normal' | 'fast' | 'instant';
+  currency: string;
+  theme: 'dark' | 'midnight';
+}
+

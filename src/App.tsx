@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
+import { TooniSidebar } from './components/TooniSidebar';
 import { VideoInputBar } from './components/VideoInputBar';
+import { MainGrowthDashboardTab } from './components/MainGrowthDashboardTab';
+import { GrowthSimulatorTab } from './components/GrowthSimulatorTab';
+import { WatchTimeCalculatorTab } from './components/WatchTimeCalculatorTab';
+import { TrafficSourcePlannerTab } from './components/TrafficSourcePlannerTab';
+import { AdsPlannerTab } from './components/AdsPlannerTab';
+import { AnalyticsChartsTab } from './components/AnalyticsChartsTab';
+import { ScenarioComparisonTab } from './components/ScenarioComparisonTab';
+import { TitleOptimizerTab } from './components/TitleOptimizerTab';
+import { DescriptionOptimizerTab } from './components/DescriptionOptimizerTab';
+import { TagGeneratorTab } from './components/TagGeneratorTab';
+import { KeywordResearchTab } from './components/KeywordResearchTab';
+import { PromotionChecklistTab } from './components/PromotionChecklistTab';
+import { GrowthHistoryTab } from './components/GrowthHistoryTab';
+import { SimulatorSettingsTab } from './components/SimulatorSettingsTab';
+
+// Existing Comprehensive SEO & Studio Components
 import { BeforeAfterScoreView } from './components/BeforeAfterScoreView';
 import { ChecklistTab } from './components/ChecklistTab';
 import { KeywordsCompetitorTab } from './components/KeywordsCompetitorTab';
@@ -14,14 +31,22 @@ import { ScriptSeoTab } from './components/ScriptSeoTab';
 import { AdvancedSeoAnalyzerTab } from './components/AdvancedSeoAnalyzerTab';
 import { SocialSeoTab } from './components/SocialSeoTab';
 import { BacklinkStrategyTab } from './components/BacklinkStrategyTab';
+
 import { SAMPLE_VIDEOS } from './data/sampleVideos';
-import { VideoData, OptimizationResult, SavedProject } from './types';
+import { VideoData, OptimizationResult, SavedProject, SimulationAssumptions } from './types';
+import { DEFAULT_ASSUMPTIONS, loadSimulatorSettings } from './utils/growthSimulatorEngine';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('optimizer');
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentVideo, setCurrentVideo] = useState<VideoData>(SAMPLE_VIDEOS[0]);
   const [optimization, setOptimization] = useState<OptimizationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [targetViews, setTargetViews] = useState<number>(100000);
+  const [assumptions, setAssumptions] = useState<SimulationAssumptions>(() => {
+    return loadSimulatorSettings().assumptions || DEFAULT_ASSUMPTIONS;
+  });
+
   const [projects, setProjects] = useState<SavedProject[]>(() => {
     try {
       const saved = localStorage.getItem('tooni_seo_projects');
@@ -40,7 +65,7 @@ export default function App() {
     }
   }, [projects]);
 
-  // Run the Step 10 Practical Optimization Engine
+  // Run Optimization Engine
   const runOptimization = async (video: VideoData = currentVideo) => {
     setIsLoading(true);
     try {
@@ -59,7 +84,7 @@ export default function App() {
     }
   };
 
-  // Initial load: generate baseline for first sample video
+  // Initial load
   useEffect(() => {
     runOptimization(SAMPLE_VIDEOS[0]);
   }, []);
@@ -97,7 +122,7 @@ export default function App() {
     const nextVideo = { ...currentVideo, title: ideaTitle };
     setCurrentVideo(nextVideo);
     runOptimization(nextVideo);
-    setActiveTab('optimizer');
+    setActiveTab('dashboard');
   };
 
   const handleSaveProject = () => {
@@ -136,132 +161,265 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white flex flex-col">
-      {/* Top App Header with Navigation */}
+      {/* Top App Header with Navigation & Brand */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         savedCount={projects.length}
+        onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
       />
 
-      {/* Video URL Input & Sample Picker */}
+      {/* Video URL Input & Sample Picker with Analyze Video, Run Simulation, and Reset */}
       <VideoInputBar
         currentVideo={currentVideo}
         onSelectVideo={handleSelectVideo}
         onAnalyzeUrl={handleAnalyzeUrl}
         isLoading={isLoading}
         onCustomUpdate={handleCustomUpdate}
+        onRunSimulation={() => setActiveTab('simulator')}
+        onReset={() => handleSelectVideo(SAMPLE_VIDEOS[0])}
       />
 
-      {/* Main View Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === 'optimizer' && (
-          <BeforeAfterScoreView
-            video={currentVideo}
-            optimization={optimization}
-            onRunImprovement={() => runOptimization(currentVideo)}
-            isLoading={isLoading}
-            onSaveProject={handleSaveProject}
-            isSaved={isCurrentSaved}
-          />
-        )}
+      {/* Main Workspace with Sidebar & Main Content */}
+      <div className="flex-1 flex w-full max-w-7xl mx-auto">
+        {/* Tooni TV Sidebar Navigation */}
+        <TooniSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          savedCount={projects.length}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen((prev) => !prev)}
+        />
 
-        {activeTab === 'ideas' && (
-          <USAVideoIdeasTab
-            initialTopic={currentVideo.title}
-            onApplyIdeaToOptimizer={handleApplyIdea}
-          />
-        )}
+        {/* Content Container */}
+        <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6">
+          {/* TAB: Main Dashboard */}
+          {activeTab === 'dashboard' && (
+            <MainGrowthDashboardTab
+              currentVideo={currentVideo}
+              onNavigateTab={(tab) => setActiveTab(tab)}
+              onSelectTarget={(target) => setTargetViews(target)}
+              assumptions={assumptions}
+            />
+          )}
 
-        {activeTab === 'checklist' && (
-          <ChecklistTab
-            optimization={optimization}
-            onRunImprovement={() => runOptimization(currentVideo)}
-            isLoading={isLoading}
-          />
-        )}
+          {/* TAB: Growth Simulator Live Timer */}
+          {activeTab === 'simulator' && (
+            <GrowthSimulatorTab
+              currentVideo={currentVideo}
+              targetViews={targetViews}
+              assumptions={assumptions}
+              onNavigateTab={(tab) => setActiveTab(tab)}
+            />
+          )}
 
-        {activeTab === 'keywords' && (
-          <KeywordsCompetitorTab currentTitle={currentVideo.title} />
-        )}
+          {/* TAB: Watch Time Calculator */}
+          {activeTab === 'watchtime-calc' && (
+            <WatchTimeCalculatorTab />
+          )}
 
-        {activeTab === 'thumbnail' && (
-          <ThumbnailCTRTab
-            currentVideo={currentVideo}
-            currentThumbnail={currentVideo.thumbnailUrl}
-            videoTitle={currentVideo.title}
-            onUpdateVideo={handleCustomUpdate}
-          />
-        )}
+          {/* TAB: Real Traffic Source Planner */}
+          {activeTab === 'traffic-planner' && (
+            <TrafficSourcePlannerTab
+              targetViews={targetViews}
+              currentViews={currentVideo.views || 12500}
+            />
+          )}
 
-        {activeTab === 'script-seo' && (
-          <ScriptSeoTab onApplyToOptimizer={(res) => {
-            const nextVideo = {
-              ...currentVideo,
-              title: res.package.primaryTitle,
-              description: res.package.description,
-              tags: res.package.tags
-            };
-            setCurrentVideo(nextVideo);
-            runOptimization(nextVideo);
-            setActiveTab('optimizer');
-          }} />
-        )}
+          {/* TAB: Google & YouTube Ads Planner */}
+          {activeTab === 'ads-planner' && (
+            <AdsPlannerTab
+              currentUrl={currentVideo.url}
+              targetViews={targetViews}
+            />
+          )}
 
-        {activeTab === 'advanced-seo' && (
-          <AdvancedSeoAnalyzerTab
-            currentTitle={currentVideo.title}
-            currentDescription={currentVideo.description}
-            currentThumbnail={currentVideo.thumbnailUrl}
-          />
-        )}
+          {/* TAB: Analytics Charts */}
+          {activeTab === 'charts' && (
+            <AnalyticsChartsTab
+              targetViews={targetViews}
+              currentViews={currentVideo.views || 12500}
+            />
+          )}
 
-        {activeTab === 'social-seo' && (
-          <SocialSeoTab
-            initialTitle={currentVideo.title}
-            initialThumbnail={currentVideo.thumbnailUrl}
-          />
-        )}
+          {/* TAB: 50K vs 100K Comparison Matrix */}
+          {activeTab === 'comparison' && (
+            <ScenarioComparisonTab
+              currentVideo={currentVideo}
+              customTarget={targetViews}
+              assumptions={assumptions}
+            />
+          )}
 
-        {activeTab === 'backlinks' && (
-          <BacklinkStrategyTab
-            currentUrl={currentVideo.url}
-            currentTitle={currentVideo.title}
-          />
-        )}
+          {/* TAB: SEO Analyzer */}
+          {activeTab === 'seo-analyzer' && (
+            <AdvancedSeoAnalyzerTab
+              currentTitle={currentVideo.title}
+              currentDescription={currentVideo.description}
+              currentThumbnail={currentVideo.thumbnailUrl}
+            />
+          )}
 
-        {activeTab === 'analytics' && <AnalyticsDoctorTab />}
+          {/* TAB: Title Optimizer */}
+          {activeTab === 'title-optimizer' && (
+            <TitleOptimizerTab
+              currentVideo={currentVideo}
+              onApplyTitle={(t) => handleCustomUpdate({ title: t })}
+            />
+          )}
 
-        {activeTab === 'planner' && <PlannerScriptTab />}
+          {/* TAB: Description Optimizer */}
+          {activeTab === 'desc-optimizer' && (
+            <DescriptionOptimizerTab
+              currentVideo={currentVideo}
+              onApplyDescription={(d) => handleCustomUpdate({ description: d })}
+            />
+          )}
 
-        {activeTab === 'extension' && (
-          <ChromeExtensionTab currentVideo={currentVideo} />
-        )}
+          {/* TAB: Tag Generator */}
+          {activeTab === 'tag-generator' && (
+            <TagGeneratorTab
+              currentVideo={currentVideo}
+              onApplyTags={(tags) => handleCustomUpdate({ tags })}
+            />
+          )}
 
-        {activeTab === 'projects' && (
-          <ProjectsTab
-            projects={projects}
-            onSelectProject={(v) => {
-              setCurrentVideo(v);
-              runOptimization(v);
-              setActiveTab('optimizer');
-            }}
-            onDeleteProject={handleDeleteProject}
-            onClearAll={handleClearAllProjects}
-          />
-        )}
-      </main>
+          {/* TAB: Keyword Research */}
+          {activeTab === 'keyword-research' && (
+            <KeywordResearchTab currentVideo={currentVideo} />
+          )}
+
+          {/* TAB: Thumbnail & CTR Studio */}
+          {activeTab === 'thumbnail' && (
+            <ThumbnailCTRTab
+              currentVideo={currentVideo}
+              currentThumbnail={currentVideo.thumbnailUrl}
+              videoTitle={currentVideo.title}
+              onUpdateVideo={handleCustomUpdate}
+            />
+          )}
+
+          {/* TAB: Promotion Checklist */}
+          {activeTab === 'checklist-tab' && (
+            <PromotionChecklistTab />
+          )}
+
+          {/* TAB: History */}
+          {activeTab === 'history-tab' && (
+            <GrowthHistoryTab />
+          )}
+
+          {/* TAB: Settings */}
+          {activeTab === 'settings-tab' && (
+            <SimulatorSettingsTab
+              currentAssumptions={assumptions}
+              onUpdateAssumptions={(newA) => setAssumptions(newA)}
+            />
+          )}
+
+          {/* TAB: Step 10 Before/After Score View */}
+          {activeTab === 'optimizer' && (
+            <BeforeAfterScoreView
+              video={currentVideo}
+              optimization={optimization}
+              onRunImprovement={() => runOptimization(currentVideo)}
+              isLoading={isLoading}
+              onSaveProject={handleSaveProject}
+              isSaved={isCurrentSaved}
+            />
+          )}
+
+          {/* TAB: Script-First SEO */}
+          {activeTab === 'script-seo' && (
+            <ScriptSeoTab onApplyToOptimizer={(res) => {
+              const nextVideo = {
+                ...currentVideo,
+                title: res.package.primaryTitle,
+                description: res.package.description,
+                tags: res.package.tags
+              };
+              setCurrentVideo(nextVideo);
+              runOptimization(nextVideo);
+              setActiveTab('dashboard');
+            }} />
+          )}
+
+          {/* TAB: USA Video Ideas */}
+          {activeTab === 'ideas' && (
+            <USAVideoIdeasTab
+              initialTopic={currentVideo.title}
+              onApplyIdeaToOptimizer={handleApplyIdea}
+            />
+          )}
+
+          {/* TAB: 100/100 Checklist */}
+          {activeTab === 'checklist' && (
+            <ChecklistTab
+              optimization={optimization}
+              onRunImprovement={() => runOptimization(currentVideo)}
+              isLoading={isLoading}
+            />
+          )}
+
+          {/* TAB: Keywords & Gaps */}
+          {activeTab === 'keywords' && (
+            <KeywordsCompetitorTab currentTitle={currentVideo.title} />
+          )}
+
+          {/* TAB: Social SEO */}
+          {activeTab === 'social-seo' && (
+            <SocialSeoTab
+              initialTitle={currentVideo.title}
+              initialThumbnail={currentVideo.thumbnailUrl}
+            />
+          )}
+
+          {/* TAB: Backlink Strategy */}
+          {activeTab === 'backlinks' && (
+            <BacklinkStrategyTab
+              currentUrl={currentVideo.url}
+              currentTitle={currentVideo.title}
+            />
+          )}
+
+          {/* TAB: Analytics Doctor */}
+          {activeTab === 'analytics' && <AnalyticsDoctorTab />}
+
+          {/* TAB: Planner & Script */}
+          {activeTab === 'planner' && <PlannerScriptTab />}
+
+          {/* TAB: Chrome Extension */}
+          {activeTab === 'extension' && (
+            <ChromeExtensionTab currentVideo={currentVideo} />
+          )}
+
+          {/* TAB: Projects */}
+          {activeTab === 'projects' && (
+            <ProjectsTab
+              projects={projects}
+              onSelectProject={(v) => {
+                setCurrentVideo(v);
+                runOptimization(v);
+                setActiveTab('dashboard');
+              }}
+              onDeleteProject={handleDeleteProject}
+              onClearAll={handleClearAllProjects}
+            />
+          )}
+        </main>
+      </div>
 
       {/* Footer */}
-      <footer className="bg-slate-900/60 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+      <footer className="bg-slate-900/60 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span className="font-semibold text-slate-400">Tooni SEO AI Engine</span>
+            <span className="font-semibold text-slate-400">Tooni TV YouTube Growth Simulator</span>
             <span>•</span>
-            <span>Gemini 3.8 Flash Powered</span>
+            <span className="text-slate-400">100% Policy Compliant Simulation & Optimization Suite</span>
           </div>
           <p>
-            100/100 Measurable Algorithmic Optimization Suite for YouTube Creators
+            Forecasts and projections are simulated estimates. Never generates fake views, likes, or bots.
           </p>
         </div>
       </footer>
